@@ -1,0 +1,96 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Formatted Date TextField Example'),
+        ),
+        body: Center(
+          child: DateTextField(),
+        ),
+      ),
+    );
+  }
+}
+
+class DateTextField extends StatefulWidget {
+  @override
+  _DateTextFieldState createState() => _DateTextFieldState();
+}
+
+class _DateTextFieldState extends State<DateTextField> {
+  TextEditingController _controller = TextEditingController();
+  int a = 0;
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      onChanged: (val) {
+        if (val.length > 10) {
+          _controller.text = val.substring(0, 10);
+          _controller.value = _controller.value.copyWith(
+            text: val.toString().substring(0, 10),
+            selection: TextSelection(
+                baseOffset: val.toString().substring(0, 10).length,
+                extentOffset: val.toString().substring(0, 10).length),
+            composing: TextRange.empty,
+          );
+        } else if (val.length > a) {
+          if (val.length == 2 || val.length == 5) {
+            val = val + "/";
+            _controller.value = _controller.value.copyWith(
+              text: val,
+              selection: TextSelection(
+                  baseOffset: val.length, extentOffset: val.length),
+              composing: TextRange.empty,
+            );
+            a = val.length;
+          }
+        } else {
+          a = val.length;
+        }
+      },
+      decoration: InputDecoration(
+        hintText: 'MM/DD/YYYY',
+      ),
+      keyboardType: TextInputType.number,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+}
+
+class DateInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    String formatted = _formatDate(newValue.text);
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+
+  String _formatDate(String input) {
+    input = input.replaceAll(RegExp(r'\D'), ''); // Remove non-digit characters
+
+    if (input.length == 2 || input.length == 5) {
+      // Format as MM/DD/YYYY
+      return '${input.substring(0, 2)}/${input.substring(2, 4)}/${input.substring(4)}';
+    }
+
+    return input;
+  }
+}
