@@ -1,0 +1,17 @@
+Future Allrequest({required String api}) async {
+    var headers = {
+      'Authorization':
+          'jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJudW1iZXIiOjg1MTExMjI1NjYsImlhdCI6MTY4OTcwMjU3OX0.zyrU0MqJ7gZzs9MpCNGBtRU0kj_MhYhtm-sm2cQtHP4',
+    };
+
+    final response = await http.get(
+      Uri.parse(api),
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      var body = response.body;
+      var decodegata = jsonDecode(body);
+      return decodegata['requests'];
+    } else {
+    }
+  }
