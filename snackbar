@@ -1,0 +1,27 @@
+ static commonSnackBar({String? msg, String? title = "Oops!"}) {
+    return Get.snackbar(
+        backgroundColor: Colors.red,
+        // duration: const Duration(milliseconds: 1000),
+        boxShadows: [
+          const BoxShadow(
+            color: Colors.black,
+            blurRadius: 5,
+          )
+        ],
+        "",
+        "",
+        titleText: Text("$title",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 18.sp,
+              color: Colors.white,
+            )),
+        messageText: Text("$msg",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 15.sp,
+              color: Colors.white,
+            )),
+        snackPosition: SnackPosition.TOP,
+        margin: EdgeInsets.all(18.h));
+  }
