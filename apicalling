@@ -1,0 +1,66 @@
+Future collectionAPIDelete(BuildContext context) async {
+    var response = await http.post(
+      Uri.parse('${CollectionAPIDelete}'),
+      body: {
+        "id": collectiondeleteid,
+      },
+    );
+    print(response.body);
+    if (response.statusCode == 200) {
+      responseData = json.decode(response.body);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(responseData['message']),
+      ));
+    }
+  }
+
+Future collectionAPiUpdate(BuildContext context) async {
+    var response = await http.post(
+      Uri.parse('${CollectionAPIUpdate}'),
+      body: {"id": updatapiid, "name": _updatecollection.text},
+    );
+    print(response.body);
+    if (response.statusCode == 200) {
+      collectionapiupdatedata = json.decode(response.body);
+      setState(() {});
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(collectionapiupdatedata['message']),
+      ));
+    }
+    setState(() {});
+  }
+
+
+Future collectionAPISelect(BuildContext context) async {
+    var response = await http.post(
+      Uri.parse("$CollectionAPISelect"),
+    );
+
+    if (response.statusCode == 200) {
+      var body = response.body;
+      var decodegata = jsonDecode(body);
+      print(decodegata);
+      return decodegata['data'];
+    } else {
+      print("object");
+    }
+    setState(() {});
+  }
+
+Future collectionapiinsert(BuildContext context) async {
+    var response = await http.post(
+      Uri.parse('${CollectionAPIInsert}'),
+      body: {
+        "name": _ccontroller.text,
+      },
+    );
+    print(response.body);
+    if (response.statusCode == 200) {
+      responseData = json.decode(response.body);
+      print(responseData);
+    } else {
+      print(responseData);
+    }
+  }
