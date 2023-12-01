@@ -1,0 +1,54 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: ImagePickerExample(),
+    );
+  }
+}
+
+class ImagePickerExample extends StatefulWidget {
+  @override
+  _ImagePickerExampleState createState() => _ImagePickerExampleState();
+}
+
+class _ImagePickerExampleState extends State<ImagePickerExample> {
+  File? _imageFile;
+
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Image Picker Example'),
+      ),
+      body: Center(
+        child: _imageFile == null
+            ? Text('No image selected')
+            : Image.file(_imageFile!),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _pickImage,
+        tooltip: 'Pick Image',
+        child: Icon(Icons.image),
+      ),
+    );
+  }
+}
