@@ -1,4 +1,10 @@
- static commonSnackBar({String? msg, String? title = "Oops!"}) {
+
+//CommonWidget.commonSnackBar(
+  //                                // msg: loginResponse.message.toString(),
+    //                              msg: 'Please Enter Phone Number',
+      //                            title: 'Oops!');
+
+static commonSnackBar({String? msg, String? title = "Oops!"}) {
     return Get.snackbar(
         backgroundColor: Colors.red,
         // duration: const Duration(milliseconds: 1000),
