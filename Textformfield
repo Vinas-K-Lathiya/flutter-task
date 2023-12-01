@@ -1,0 +1,4 @@
+inputFormatters: [
+     FilteringTextInputFormatter.allow(
+         RegExp("[0-9a-zA-Z@.]")),
+],
