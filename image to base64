@@ -1,0 +1,9 @@
+String imagee = "";
+  List<int> imagelist = [];
+
+ if (Globaladmin.pic != null) {
+                                imagelist =
+                                    await Globaladmin.pic!.readAsBytes();
+                                imagee = base64Encode(imagelist);
+                                
+                              }
