@@ -1,0 +1,11 @@
+Uint8List? Logooo1;
+
+var caategoryImage = allproductdata[index]['media'];
+   var Tempoo = caategoryImage;
+    if (Tempoo != "") {
+      if (Tempoo.contains("data:image")) {
+             Logooo1 = base64.decode(Tempoo.split(',')[1]);
+       } else {
+      Logooo1 = base64.decode(Tempoo);
+   }
+ }
