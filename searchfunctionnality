@@ -1,0 +1,7 @@
+void _filterData1(String query) {
+    setState(() {
+      _filteredData = Temp1.where((e) =>
+              e['product']['title'].toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
