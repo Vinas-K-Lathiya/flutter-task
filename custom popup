@@ -1,0 +1,102 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Custom PopupMenu Example'),
+        ),
+        body: Center(
+          child: CustomPopupMenuButton(),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomPopupMenuButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<int>(
+      itemBuilder: (BuildContext context) {
+        return <PopupMenuEntry<int>>[
+          CustomPopupMenuItem(
+            text: 'Red',
+            backgroundColor: Colors.red,
+            width: 150.0, // Set the desired width
+            value: 0,
+          ),
+          CustomPopupMenuItem(
+            text: 'Green',
+            backgroundColor: Colors.green,
+            width: 150.0, // Set the desired width
+            value: 1,
+          ),
+          CustomPopupMenuItem(
+            text: 'Blue',
+            backgroundColor: Colors.blue,
+            width: 150.0, // Set the desired width
+            value: 2,
+          ),
+        ];
+      },
+      onSelected: (int value) {
+        // Handle the selected value
+        print('Selected: $value');
+      },
+    );
+  }
+}
+
+class CustomPopupMenuItem extends PopupMenuEntry<int> {
+  final String text;
+  final Color backgroundColor;
+  final double width;
+  final int value;
+
+  CustomPopupMenuItem({
+    required this.text,
+    required this.backgroundColor,
+    required this.width,
+    required this.value,
+  });
+
+  @override
+  double get height => 40;
+
+  @override
+  bool represents(int? value) {
+    return value == this.value;
+  }
+
+  @override
+  CustomPopupMenuItemState createState() => CustomPopupMenuItemState();
+}
+
+class CustomPopupMenuItemState extends State<CustomPopupMenuItem> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pop(context, widget.value);
+      },
+      child: Container(
+        width: widget.width,
+        color: widget.backgroundColor,
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        height: widget.height,
+        alignment: Alignment.centerLeft,
+        child: Text(
+          widget.text,
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
