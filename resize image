@@ -1,0 +1,77 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
+
+void main() {
+  runApp(MaterialApp(
+    home: ImageResizeScreen(),
+  ));
+}
+
+class ImageResizeScreen extends StatefulWidget {
+  @override
+  _ImageResizeScreenState createState() => _ImageResizeScreenState();
+}
+
+class _ImageResizeScreenState extends State<ImageResizeScreen> {
+  var _selectedImage;
+  var pickedImage;
+
+  Future<void> _pickAndResizeImage() async {
+    final pickedImage = await _pickImageFromGallery();
+    if (pickedImage != null) {
+      final resizedImage = await _resizeImage(pickedImage);
+
+      setState(() {
+        _selectedImage = resizedImage;
+      });
+    }
+  }
+
+  Future<File?> _pickImageFromGallery() async {
+    final picker = ImagePicker();
+    pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    return pickedImage != null ? File(pickedImage.path) : null;
+  }
+
+  Future<File> _resizeImage(File imageFile) async {
+    // Read the image file
+    List<int> bytes = await imageFile.readAsBytes();
+    img.Image? image = img.decodeImage(Uint8List.fromList(bytes));
+
+    // Resize the image to the desired dimensions (720x450)
+    img.Image resizedImage = img.copyResize(image!, width: 720, height: 450);
+    print(resizedImage.height);
+    print(resizedImage.width);
+    // Save the resized image to a new file
+    File resizedFile = File(pickedImage.path);
+    resizedFile.writeAsBytesSync(img.encodeJpg(resizedImage));
+    return resizedFile;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Image Resize Example'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _selectedImage != null
+                ? Image.file(_selectedImage)
+                : Text('Select an image'),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _pickAndResizeImage,
+              child: Text('Pick and Resize Image'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
