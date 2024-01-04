@@ -1,0 +1,16 @@
+"images": ["${All_images_uint8}"],
+
+
+Future addwishlist(BuildContext context, Map data) async {
+    final String requestBody = json.encode(data);
+
+    var response = await http.post(Uri.parse("${Api_url.Product_insert}"),
+        headers: {
+          'Content-Type': 'application/json', // Specify the content type
+        },
+        body: requestBody);
+    print(response.body);
+    if (response.statusCode == 200) {
+      print("okkkk");
+    } else {}
+  }
