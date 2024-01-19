@@ -1,0 +1,90 @@
+import 'package:flutter/material.dart';
+
+import 'UiScreens/DrawerScreens/VisitRegistration/VisitRegistration.dart';
+import 'UiScreens/Splesh/SplashScreen.dart';
+import 'main.dart';
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(navigatorKey: navigatorKey,
+      title: 'Herdman',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(progressIndicatorTheme: ProgressIndicatorThemeData(color: Colors.blue),iconButtonTheme: IconButtonThemeData(style: ButtonStyle(iconColor: MaterialStatePropertyAll(Colors.white))),floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.blue),primarySwatch: Colors.blue, fontFamily: "Poppins"),
+      home:  SpleshScreen(),
+    );
+  }
+}
+void showToast(Map Data) {
+  OverlayEntry? overlayEntry;
+  overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Stack(alignment: Alignment.center, children: [
+          Material(
+            color: Colors.transparent,
+            child: Container(
+              height: MediaQuery.of(context).size.height / 3,
+              width: MediaQuery.of(context).size.width / 1.5,
+              color: Colors.white,
+              child: Column(children: [
+                Container(
+                    alignment: Alignment.center,
+                    height: MediaQuery.of(context).size.height / 15,
+                    width: double.infinity,
+                    color: Colors.blue.shade900,
+                    child: const Text(
+                      "You Have New Visit",
+                      style: TextStyle(color: Colors.white),
+                    )),
+                Spacer(),
+                Padding(
+                  // {"date" :"400","id":"145823","Dcs":"45821856"}
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text("You Have New ${Data['VisitCost'].toString() == "100" ? "Normal":"Emergency"} from ${Data['lotname']} DCS and Visit ID is ${Data['VisitID']}",textAlign: TextAlign.center),
+                ),
+                Spacer(),
+                Row(mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                        onTap: () {
+                          overlayEntry!.remove();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),border: Border.all(color: Colors.blue.shade900)),
+                          margin: const EdgeInsets.all(8),
+                          height: 35,
+                          width: MediaQuery.of(context).size.width / 4.8,
+                          alignment: Alignment.center,
+                          child: Text("Close",style: TextStyle(color: Colors.blue.shade900)),
+                        )),
+                    InkWell(
+                        onTap: () {
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                            return VisitRegistrationScreen();
+                          },));
+                          overlayEntry!.remove();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.blue.shade900,
+                              borderRadius: BorderRadius.circular(10)),
+                          margin: const EdgeInsets.all(8),
+                          height: 35,
+                          width: MediaQuery.of(context).size.width / 4.4,
+                          alignment: Alignment.center,
+                          child: const Text("Go To Visit",style: TextStyle(color: Colors.white)),
+                        )),
+                  ],
+                )
+              ]),
+            ),
+          )
+        ]);
+      });
+
+  MyApp.navigatorKey.currentState?.overlay?.insert(overlayEntry);
+
+}
