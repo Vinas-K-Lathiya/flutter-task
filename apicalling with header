@@ -15,3 +15,32 @@ Future Allrequest({required String api}) async {
     } else {
     }
   }
+
+
+
+
+
+/// if upper code not run than try this
+
+Future addChatInGlobal({required String name,required String message}) async {
+    var headers = {
+      'AuthToken': '2ec26ad9-e039-445e-915e-a482dc6f5e3b',
+    };
+
+    final response = await http.post(
+      Uri.parse('https://api.baii.me/api/createglobalchat'),
+      headers: headers,
+      body: {
+        "user_id":name,
+        "message": message,
+      },
+    );
+    print("statusCode" + "${response.statusCode}");
+    print(response.body);
+    if (response.statusCode == 200) {
+      var responseData;
+      responseData = await json.decode(response.body);
+      print(responseData);
+      return responseData;
+    } else {}
+  }
