@@ -1,0 +1,68 @@
+// how to call 
+await signInWithPhoneNumber("+91${Constant.Co_Signin_email.text}");
+ 
+ 
+ 
+ 
+ 
+ Future<void> signInWithPhoneNumber(String phoneNumber) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    await auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await auth.signInWithCredential(credential);
+        // authentication successful, do something
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        // authentication failed, do something
+        error = e;
+        setState(() {});
+      },
+      codeSent: (String verificationId, int? resendToken) async {
+        // code sent to phone number, save verificationId for later use
+        String smsCode = ''; // get sms code from user
+        PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: verificationId,
+          smsCode: smsCode,
+        );
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Signup_otp(OTP: verificationId),
+            ));
+        await auth.signInWithCredential(credential);
+        // authentication successful, do something
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+  }
+
+
+
+  // how to confirm otp 
+
+ PhoneAuthCredential credentil = PhoneAuthProvider.credential(
+                      verificationId: widget.OTP.toString(), smsCode: strOtp);
+                  FirebaseAuth.instance
+                      .signInWithCredential(credentil)
+                      .then((value) {
+                    if (value != null) {
+                      // SharedPref.save_string(Con_sharekey.Login_Userid,
+                      //     Signin_response["_id"].toString());
+                      // SharedPref.save_string(Con_sharekey.Login_Roleid,
+                      //     Signin_response["role"].toString());
+                      // SharedPref.save_string(Con_sharekey.Login_Emailid,
+                      //     Signin_response['phone'].toString());
+                      // SharedPref.save_string(Con_sharekey.Login_UserName,
+                      //     Signin_response['name'].toString());
+                      SharedPref.save_bool("is_login", true);
+                      // useridd = await SharedPref.read_string(
+                      //     Con_sharekey.Login_Userid);
+                      // await user_activity();
+                      Navigator.of(context).pushReplacement(
+                          Con_wid.createRoute(page: Dashboard()));
+                      Toast.show(context, "Signup successFully..!!", true);
+                    } else {
+                      Toast.show(context, "Please enter valid number", false);
+                    }
