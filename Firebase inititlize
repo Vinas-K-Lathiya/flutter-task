@@ -1,0 +1,33 @@
+WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: "AIzaSyCaKpHfqDd-sXqX4Ziw9GCkM0GSG9ISM7U",
+            appId: "1:1033682474609:web:5ca665961abf2b1c9badd0",
+            messagingSenderId: "1033682474609",
+            projectId: "rojgarbharat-6a934"));
+  } else {
+    await Firebase.initializeApp();
+  }
+
+
+
+
+
+// in web
+ <script>
+  //Replace with your config data
+  var firebaseConfig = {
+  apiKey: "AIzaSyCaKpHfqDd-sXqX4Ziw9GCkM0GSG9ISM7U",
+  authDomain: "rojgarbharat-6a934.firebaseapp.com",
+  projectId: "rojgarbharat-6a934",
+  storageBucket: "rojgarbharat-6a934.appspot.com",
+  messagingSenderId: "1033682474609",
+  appId: "1:1033682474609:web:5ca665961abf2b1c9badd0",
+  measurementId: "G-HN9D03RLTB"
+};
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+  </script>
