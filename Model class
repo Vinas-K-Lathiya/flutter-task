@@ -1,0 +1,37 @@
+// class HHome extends StatefulWidget {
+//   const HHome({super.key});
+//
+//   @override
+//   State<HHome> createState() => _HHomeState();
+// }
+//
+// class _HHomeState extends State<HHome> {
+//   List dsjvb = [
+//     {"age": "19", "name": "vinas"}
+//   ];
+//   List<vinas> abc = [];
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//     abc = dsjvb.map((e) => vinas.fromjson(e)).toList();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Container(
+//         child: Text(abc[0].cdsv.toString()),
+//       ),
+//     );
+//   }
+// }
+//
+// class vinas {
+//   String? cdsv, dsvf;
+//   vinas({required this.cdsv, required this.dsvf});
+//   vinas.fromjson(Map<String, dynamic> okkk) {
+//     cdsv = okkk['age'];
+//     dsvf = okkk['name'];
+//   }
+// }
