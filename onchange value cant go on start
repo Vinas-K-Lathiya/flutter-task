@@ -1,0 +1,8 @@
+Co_Issue_qty[Index - 1].text = value;
+                            Co_Issue_qty[Index - 1].value =
+                                Co_Issue_qty[Index - 1].value.copyWith(
+                                    text: value.toString(),
+                                    selection: TextSelection(
+                                        baseOffset: value.length,
+                                        extentOffset: value.length),
+                                    composing: TextRange.empty);
