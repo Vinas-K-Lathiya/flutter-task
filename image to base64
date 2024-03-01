@@ -1,9 +1,20 @@
-String imagee = "";
-  List<int> imagelist = [];
+//String imagee = "";
+ // List<int> imagelist = [];
 
- if (Globaladmin.pic != null) {
-                                imagelist =
-                                    await Globaladmin.pic!.readAsBytes();
-                                imagee = base64Encode(imagelist);
-                                
+ //if (Globaladmin.pic != null) {
+                             //   imagelist =
+                               //     await Globaladmin.pic!.readAsBytes();
+                               // imagee = base64Encode(imagelist);
+                              //  
                               }
+
+
+
+imageFile = File(pickedFile.path);
+        Uint8List imageFile_uint;
+        imageFile_uint = imageFile!.readAsBytesSync();
+        imageFile_String = base64Encode(imageFile_uint);
+        await Api_Helper.Insert_api(
+            api: "http://43.249.231.225:8078/LatestOffers/Insert",
+            data: {"images": "$imageFile_String"});
+        await SelectOffer();
