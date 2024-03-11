@@ -1,0 +1,64 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'No Reflection Navigation',
+      navigatorObservers: [], // Disable default animation
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home Page'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(context, NoReflectionRoute(page: MyNewScreen()));
+          },
+          child: Text('Go to New Screen'),
+        ),
+      ),
+    );
+  }
+}
+
+class MyNewScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('New Screen'),
+      ),
+      body: Center(
+        child: Text('This is the new screen!'),
+      ),
+    );
+  }
+}
+
+class NoReflectionRoute extends PageRouteBuilder<void> {
+  final Widget page;
+
+  NoReflectionRoute({required this.page})
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => child,
+        );
+}
