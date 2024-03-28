@@ -1,0 +1,22 @@
+Ink(
+  decoration: ShapeDecoration(
+    color: Colors.transparent,
+    shape: CircleBorder(),
+  ),
+  width: 36, // Adjust as needed for a larger splash effect
+  height: 36, // Adjust as needed for a larger splash effect
+  child: InkWell(
+    onTap: () {
+      // Handle onTap event
+    },
+    borderRadius: BorderRadius.circular(18.0), // Adjust as needed
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Icon(
+        Icons.mode_edit_outline_outlined,
+        color: Mixorangecolor,
+        size: 18,
+      ),
+    ),
+  ),
+)
