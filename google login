@@ -1,0 +1,62 @@
+signInWithGoogle().then((value) async {
+                            print(value);
+                            User? user = FirebaseAuth.instance.currentUser;
+                            print(user!.email.toString());
+                            if (user!.email.toString().isNotEmpty) {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              await DrawerWidget.dbclear();
+                              Con_Wid.ConLoding(context);
+                              if (await api_page_login.logincheck(
+                                  user.email.toString().trim(),"welcome@123")) {
+                                SyncDB.SyncUserData();
+                                await getLanguage().then((value) async {
+                                  await SyncDB.SyncTable("OneTimeData", true);
+                                  loadallData().then((value) {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DashBoardScreen()));
+                                  });
+                                });
+                              } else {
+                                Navigator.pop(context);
+                                Con_Wid.Con_Show_Toast(
+                                    context, 'it' 's worng user id or password');
+                              }
+                            } else {
+                              Con_Wid.Con_Show_Toast(
+                                  context, 'Please Fill All Field');
+                            }
+                          });
+// show bottom code
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//  Future<UserCredential> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication? googleAuth =
+    await googleUser?.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
