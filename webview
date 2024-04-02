@@ -1,0 +1,64 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Webview Example',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final String url =
+      'https://gemini.google.com/app/f27ee5a7656d04ba'; // Replace with your desired website
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Flutter Webview'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MyWebView(url: url)),
+            );
+          },
+          child: Text('Open Webview'),
+        ),
+      ),
+    );
+  }
+}
+
+class MyWebView extends StatelessWidget {
+  final String url;
+
+  const MyWebView({Key? key, required this.url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return WebviewScaffold(
+      url: url,
+      appBar: AppBar(
+        title: Text('My Webview'),
+      ),
+      persistentFooterButtons: [Text("TOKEN")],
+    );
+  }
+}
