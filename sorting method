@@ -1,0 +1,8 @@
+wishlistdata.sort((a, b) => double.parse(a['product']
+                                                                              [
+                                                                              'variantTotalPrice']
+                                                                          .toString())
+                                                                      .compareTo(double.parse(b['product']
+                                                                              [
+                                                                              'variantTotalPrice']
+                                                                          .toString())));
