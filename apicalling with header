@@ -44,3 +44,42 @@ Future addChatInGlobal({required String name,required String message}) async {
       return responseData;
     } else {}
   }
+
+
+// with getconnect method
+
+import 'package:get_connect/get_connect.dart';
+
+class CustomGetConnect extends GetConnect {
+  Future<void> createChecklistItem() async {
+    final String url = 'https://app-qa.partify.ai/create_checklist_item/';
+    final Map<String, dynamic> data = {
+      "event_id": 229,
+      "title": "sample title 7"
+    };
+    final String token =
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1MTg2NzU1LCJqdGkiOiI5NmVmM2EyZjQ3Nzc0MmViYTUxNDA4NjFkZWE4ODExZSIsInVzZXJfaWQiOjE3OH0.K9RHtCtKrQInhejkqA4J19B4cN1zNDUJS7Qkp5Hps8I';
+
+    final response = await post(
+      url,
+      body: data,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('Checklist item created successfully');
+    } else {
+      print(
+          'Failed to create checklist item. Status code: ${response.statusCode}');
+      print('Response body: ${response.bodyString}');
+    }
+  }
+}
+
+void main() {
+  CustomGetConnect().createChecklistItem();
+}
+
