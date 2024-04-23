@@ -1,49 +1,42 @@
-Future Allrequest({required String api}) async {
-    var headers = {
-      'Authorization':
-          'jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJudW1iZXIiOjg1MTExMjI1NjYsImlhdCI6MTY4OTcwMjU3OX0.zyrU0MqJ7gZzs9MpCNGBtRU0kj_MhYhtm-sm2cQtHP4',
-    };
+import 'dart:convert';
 
-    final response = await http.get(
-      Uri.parse(api),
-      headers: headers,
-    );
-    if (response.statusCode == 200) {
-      var body = response.body;
-      var decodegata = jsonDecode(body);
-      return decodegata['requests'];
-    } else {
-    }
-  }
+import 'package:http/http.dart' as http;
 
+void createChecklistItem() async {
+  final String url = 'https://app-qa.partify.ai/create_checklist_item/';
+  final Map<String, dynamic> data = {
+    "event_id": 229,
+    "title": "sample title 7"
+  };
+  final String token =
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1MTg2NzU1LCJqdGkiOiI5NmVmM2EyZjQ3Nzc0MmViYTUxNDA4NjFkZWE4ODExZSIsInVzZXJfaWQiOjE3OH0.K9RHtCtKrQInhejkqA4J19B4cN1zNDUJS7Qkp5Hps8I';
 
+  final response = await http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode(data),
+  );
 
-
-
-/// if upper code not run than try this
-
-Future addChatInGlobal({required String name,required String message}) async {
-    var headers = {
-      'AuthToken': '2ec26ad9-e039-445e-915e-a482dc6f5e3b',
-    };
-
-    final response = await http.post(
-      Uri.parse('https://api.baii.me/api/createglobalchat'),
-      headers: headers,
-      body: {
-        "user_id":name,
-        "message": message,
-      },
-    );
-    print("statusCode" + "${response.statusCode}");
+  if (response.statusCode == 200) {
     print(response.body);
-    if (response.statusCode == 200) {
-      var responseData;
-      responseData = await json.decode(response.body);
-      print(responseData);
-      return responseData;
-    } else {}
+    print('Checklist item created successfully');
+  } else {
+    print(
+        'Failed to create checklist item. Status code: ${response.statusCode}');
+    print('Response body: ${response.body}');
   }
+}
+
+void main() {
+  createChecklistItem();
+}
+
+
+
+
 
 
 // with getconnect method
