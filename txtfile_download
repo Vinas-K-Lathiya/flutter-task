@@ -1,0 +1,19 @@
+ Future<void> saveMapToFile(Map<String, dynamic> data) async {
+    try {
+      // Get the directory where the file will be saved
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/data.txt');
+      print(directory.path);
+
+      // Convert the map to a JSON string
+      final jsonString = jsonEncode(data);
+
+      // Write the JSON string to the file
+      await file.writeAsString(jsonString);
+
+      // Show a message indicating the file has been saved
+      print('File saved successfully');
+    } catch (e) {
+      print('Error saving file: $e');
+    }
+  }
