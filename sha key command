@@ -1,2 +1,2 @@
 cd android                                 
-mac@192 android % ./gradlew signingReport  
+./gradlew signingReport
