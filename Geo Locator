@@ -1,0 +1,26 @@
+Future Get_Location_User() async {
+  // Check location permission
+  var status = await Permission.location.status;
+  if (status != PermissionStatus.granted) {
+    // Request location permission
+    await Permission.location.request();
+    status = await Permission.location.status;
+  }
+
+  if (status == PermissionStatus.granted) {
+    try {
+      // Get user's location
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      // Reverse geocoding to get address details
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+
+      userState = placemarks.first.administrativeArea ?? 'Unknown State';
+      userCity = placemarks.first.locality ?? 'Unknown City';
+
+
+    } catch (e) {}
+  } else {}
+}
