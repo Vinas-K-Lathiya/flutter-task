@@ -1,64 +1,91 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+// Dependency   -  webview_flutter: ^4.8.0
 
-void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+
+
+
+
+
+
+
+class MyWebView extends StatefulWidget {
+  final String url;
+  final String title;
+
+  MyWebView({Key? key, required this.url, required this.title})
+      : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Webview Example',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(),
-    );
+  State<MyWebView> createState() => _MyWebViewState();
+}
+
+class _MyWebViewState extends State<MyWebView> {
+  @override
+  var loadingPercentage = 0;
+  late final WebViewController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = WebViewController()
+      ..setNavigationDelegate(NavigationDelegate(
+        onPageStarted: (url) {
+          setState(() {
+            loadingPercentage = 0;
+          });
+        },
+        onProgress: (progress) {
+          setState(() {
+            loadingPercentage = progress;
+          });
+        },
+        onPageFinished: (url) {
+          setState(() {
+            loadingPercentage = 100;
+          });
+        },
+      ))
+      ..loadRequest(
+        Uri.parse(widget.url),
+      );
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final String url =
-      'https://gemini.google.com/app/f27ee5a7656d04ba'; // Replace with your desired website
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Webview'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MyWebView(url: url)),
-            );
-          },
-          child: Text('Open Webview'),
+        elevation: 0,
+        backgroundColor: ConstantColors.primaryColor,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Image.asset(
+              "assets/icon.png",
+              height: 40,
+            ),
+            CustomText(
+              text: "${widget.title}",
+              size: 17,
+              bold: FontWeight.w700,
+              color: ConstantColors.white,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+          ],
         ),
       ),
-    );
-  }
-}
-
-class MyWebView extends StatelessWidget {
-  final String url;
-
-  const MyWebView({Key? key, required this.url}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return WebviewScaffold(
-      url: url,
-      appBar: AppBar(
-        title: Text('My Webview'),
+      body: Stack(
+        children: [
+          WebViewWidget(
+            controller: controller,
+          ),
+          if (loadingPercentage < 100)
+            LinearProgressIndicator(
+              value: loadingPercentage / 100.0,
+            ),
+        ],
       ),
-      persistentFooterButtons: [Text("TOKEN")],
     );
   }
 }
