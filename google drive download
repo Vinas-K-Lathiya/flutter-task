@@ -1,0 +1,139 @@
+//  http:
+//   path_provider:
+
+
+
+
+
+
+
+
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Google Drive API Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  final String folderId =
+      '1j7g3TmNM58VdHa9ZI9j7ZzQRf-Yoa1lZ'; // Replace with your folder ID
+  final String apiKey =
+      'AIzaSyCJywtHBFZi2ZjFV7AnUYKm0RSmoExY9U4'; // Replace with your API key
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  List<String> files = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getFilesInFolder();
+  }
+
+  Future<void> _getFilesInFolder() async {
+    final String apiUrl = 'https://www.googleapis.com/drive/v3/files';
+    final String queryParams =
+        '?q=\'${widget.folderId}\' in parents&key=${widget.apiKey}';
+    final String url = '$apiUrl$queryParams';
+    print("dskhvn");
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        List<String> fileNames = [];
+        for (var file in data['files']) {
+          fileNames.add(file['name']);
+          // Optionally, you can also get the file ID and other details here
+          // For downloading the file, you would typically need the file ID
+        }
+        setState(() {
+          files = fileNames;
+        });
+        print(files);
+      } else {
+        print('Failed to load files: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching files: $e');
+    }
+  }
+
+  Future<void> _downloadFile(String fileId, String fileName) async {
+    final String apiUrl =
+        'https://www.googleapis.com/drive/v3/files/$fileId?alt=media';
+    final String url = '$apiUrl&key=${widget.apiKey}';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final String basePath =
+        await _findLocalPath(); // Get base path dynamically
+        final String filePath = '$basePath/$fileName';
+
+        // Create the directory if it doesn't exist
+        final Directory directory = Directory(basePath);
+        if (!await directory.exists()) {
+          await directory.create(recursive: true);
+        }
+
+        // Save the file locally
+        final File file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+        print('File downloaded successfully to: $filePath');
+      } else {
+        print('Failed to download file: ${response.statusCode}');
+        print(response.body);
+      }
+    } catch (e) {
+      print('Error downloading file: $e');
+    }
+  }
+
+  Future<String> _findLocalPath() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Google Drive API Demo'),
+      ),
+      body: ListView.builder(
+        itemCount: files.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(files[index]),
+            onTap: () {
+              _downloadFile('1ajQpAiMnF-YuFbNas5yttpJXM07OmNJE',
+                  files[index]); // Replace FILE_ID_HERE with actual file ID
+            },
+          );
+        },
+      ),
+    );
+  }
+}
