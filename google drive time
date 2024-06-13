@@ -1,0 +1,179 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:flutter/material.dart';
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:http/http.dart' as http1;
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+void main() {
+  runApp(MaterialApp(
+    home: GoogleDriveFileList(
+      folderId: '1w2jA2f39jAV_YGTIbRe6sUKv6cRF04Zg',
+      // Replace with your folder ID
+      apiKey:
+      'AIzaSyAHnHVErgVBlhXcmbxwzhjtaYN8l36QwLE', // Replace with your API key
+    ),
+  ));
+}
+
+class GoogleDriveFileList extends StatefulWidget {
+  final String folderId;
+  final String apiKey;
+
+  GoogleDriveFileList({required this.folderId, required this.apiKey});
+
+  @override
+  _GoogleDriveFileListState createState() => _GoogleDriveFileListState();
+}
+
+class _GoogleDriveFileListState extends State<GoogleDriveFileList> {
+  late Future<List<FileItem>> _files;
+
+  @override
+  void initState() {
+    super.initState();
+    _files = fetchFiles(widget.folderId, widget.apiKey);
+  }
+
+  Future<List<FileItem>> fetchFiles(String folderId, String apiKey) async {
+    final response = await http.get(Uri.parse(
+        'https://www.googleapis.com/drive/v3/files?q=\'$folderId\'+in+parents&fields=files(id,name,modifiedTime,webContentLink)&key=$apiKey'));
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      List<dynamic> files = jsonResponse['files'];
+
+      return files.map((file) => FileItem.fromJson(file)).toList();
+    } else {
+      throw Exception('Failed to load files');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Google Drive Files'),
+      ),
+      body: FutureBuilder<List<FileItem>>(
+        future: _files,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No files found.'));
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(snapshot.data![index].name),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('ID: ${snapshot.data![index].id}'),
+                      Text(
+                          'Last Modified: ${snapshot.data![index].modifiedTime ?? 'N/A'}'),
+                      Text(
+                          'Web Content Link : ${snapshot.data![index].webContentLink ?? 'N/A'}'),
+                      snapshot.data![index].webContentLink != null
+                          ? ElevatedButton(
+                        onPressed: () => _downloadFile(
+                            snapshot.data![index].webContentLink!),
+                        child: Text('Download'),
+                      )
+                          : Container(),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+  Future<http.Client> _getAuthClient() async {
+    final _credentials = ClientId(
+      '998079019178-b44sa7uvebtgmvncogsvskbi4e6f3i9i.apps.googleusercontent.com',
+      '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',
+    );
+    const _scopes = [drive.DriveApi.driveReadonlyScope];
+
+    return await clientViaUserConsent(_credentials, _scopes, (url) async {
+      final uri = Uri.parse(url);
+      print(uri);
+      if (!await launchUrl(uri)) {
+        throw Exception('Could not launch $url');
+      }
+    });
+  }
+
+
+  void _downloadFile(String url) async {
+    print('clier');
+    final client = await _getAuthClient();
+    print('111clier');
+    final driveApi = drive.DriveApi(client);
+
+    print(client.toString());
+    try {
+      final media = await driveApi.files.get(
+        "1eB2JmsQmV9Rg0yBUo4_Rn_IYtam4A4Aw",
+        downloadOptions: drive.DownloadOptions.fullMedia,
+      ) as http.StreamedResponse;
+
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/app-release.apk';
+      final file = File(filePath);
+      await media.stream.pipe(file.openWrite());
+
+      print('File downloaded to: $filePath');
+    } catch (e) {
+      print('Error downloading file: $e');
+    } finally {
+      client.close();
+    }
+  }
+
+
+
+}
+
+//
+// void _downloadFile(String url) async {
+//   if (await canLaunch(url)) {
+//     await launch(url);
+//   } else {
+//     throw 'Could not launch $url';
+//   }
+// }
+
+class FileItem {
+  final String id;
+  final String name;
+  final String? modifiedTime;
+  final String? webContentLink;
+
+  FileItem(
+      {required this.id,
+        required this.name,
+        this.modifiedTime,
+        this.webContentLink});
+
+  factory FileItem.fromJson(Map<String, dynamic> json) {
+    print(json['id']);
+    return FileItem(
+      id: json['id'],
+      name: json['name'],
+      modifiedTime: json['modifiedTime'],
+      webContentLink: json['webContentLink'],
+    );
+  }
+}
