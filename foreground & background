@@ -1,0 +1,36 @@
+ Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+  service.configure(
+    androidConfiguration: AndroidConfiguration(
+      onStart: onStart,
+      isForegroundMode: true,
+      autoStart: true,
+    ),
+    iosConfiguration: IosConfiguration(
+      onForeground: onStart,
+      autoStart: true,
+    ),
+  );
+
+  service.startService();
+}
+
+void onStart(ServiceInstance service) {
+  service.on('stopService').listen((event) {
+    service.stopSelf();
+  });
+
+  Timer.periodic(Duration(seconds: 5), (timer) {
+    i++;
+    print("$i");
+    if (service is AndroidServiceInstance) {
+      (service as AndroidServiceInstance).setForegroundNotificationInfo(
+        title: "Image Processing Service",
+        content: "Background Service Running",
+      );
+    }
+
+    // Example: Log a message to show the service is running
+    print("Background service is running");
+  });
+}
