@@ -1,0 +1,109 @@
+import 'dart:async';
+
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+
+int i = 0;
+void main() {
+  runApp(MyApp());
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+  service.configure(
+    androidConfiguration: AndroidConfiguration(
+      onStart: onStart,
+      isForegroundMode: true,
+      autoStart: true,
+    ),
+    iosConfiguration: IosConfiguration(
+      onForeground: onStart,
+      autoStart: true,
+    ),
+  );
+
+  service.startService();
+}
+
+void onStart(ServiceInstance service) {
+  service.on('stopService').listen((event) {
+    service.stopSelf();
+  });
+
+  Timer.periodic(Duration(seconds: 5), (timer) {
+    i++;
+    WebViewExample();
+    print("asdesf$i");
+    if (service is AndroidServiceInstance) {
+      (service as AndroidServiceInstance).setForegroundNotificationInfo(
+        title: "Image Processing Service",
+        content: "Background Service Running",
+      );
+    }
+
+    // Example: Log a message to show the service is running
+    print("Background service is running");
+  });
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initializeService();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: WebViewExample(),
+    );
+  }
+}
+
+class WebViewExample extends StatefulWidget {
+  @override
+  _WebViewExampleState createState() => _WebViewExampleState();
+}
+
+class _WebViewExampleState extends State<WebViewExample> {
+  InAppWebViewController? webViewController;
+  late AudioPlayer _audioPlayer;
+  bool isPlaying = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Audio Player Example'),
+      ),
+      body: Center(
+        child: IconButton(
+          icon: Icon(true ? Icons.pause : Icons.play_arrow),
+          iconSize: 64,
+          onPressed: _playPauseAudio,
+        ),
+      ),
+    );
+  }
+
+  void _playPauseAudio() async {
+    if (isPlaying) {
+      await _audioPlayer.pause();
+    } else {
+      await _audioPlayer
+          .play(UrlSource('https://www.sample-videos.com/audio/mp3/wave.mp3'));
+    }
+    setState(() {
+      isPlaying = !isPlaying;
+    });
+  }
+}
