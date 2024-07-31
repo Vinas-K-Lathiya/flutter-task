@@ -8,3 +8,13 @@ keytool -list -v -keystore <path-to-your-keystore> -alias <your-alias> -storepas
 
 // show keystore
 keytool -list -keystore /Volumes/Snepi/Hidi/android/app/upload-keystore.jks
+
+
+
+
+
+//////////////////////    how to build new gradle
+
+cd android
+./gradlew clean
+./gradlew build
