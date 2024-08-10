@@ -1,0 +1,44 @@
+keytool -genkey -v -keystore F:\LiveProjects\Projects\Flutter\A_Advertise\kid_learning\android\app\my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias
+
+
+
+make key.properties
+// add this in that file key.properties
+storePassword=9426114378
+keyPassword=9426114378
+keyAlias=my-key-alias
+storeFile=F:/LiveProjects/Projects/Flutter/A_Advertise/kid_learning/android/app/my-release-key.jks
+
+
+add in app\buildgradle
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+
+
+ signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+        }
+    }
+
+
+
+
