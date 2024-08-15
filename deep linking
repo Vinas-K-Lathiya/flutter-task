@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+void main() => runApp(MaterialApp.router(routerConfig: router));
+
+/// This handles '/' and '/details'.
+final router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (_, __) => Scaffold(
+        appBar: AppBar(title: const Text('Home Screen')),
+      ),
+      routes: [
+        GoRoute(
+          path: 'details',
+          builder: (_, __) => Scaffold(
+            appBar: AppBar(title: Text('Details Screen')),
+          ),
+        ),
+        GoRoute(
+          path: 'details1',
+          builder: (_, __) => Scaffold(
+            appBar: AppBar(title: const Text('Details1 Screen')),
+          ),
+        ),
+        GoRoute(
+          path: 'details2',
+          builder: (_, __) => Scaffold(
+            appBar: AppBar(title: const Text('Details2 Screen')),
+          ),
+        ),
+      ],
+    ),
+  ],
+);
+
+
+
+
+
+// in android menifest  
+//deeplinkhosting-3a851.web.app   domain name
+ <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="deeplinkhosting-3a851.web.app" android:pathPrefix="/details" />
+                <data android:scheme="https" android:host="deeplinkhosting-3a851.web.app" android:pathPrefix="/details" />
+            </intent-filter>
+
+
+
+
+
+// live web and make "assetlinks.json" file
+
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.app.mehendiapp",  /// package name 
+    "sha256_cert_fingerprints":
+    ["BD:2C:CE:89:BB:26:6B:91:0F:10:E2:F5:C9:0B:71:A5:F4:82:C9:21:85:20:33:06:BF:4C:AF:A9:2C:E3:36:45"] // sha256 key
+  }
+}]
