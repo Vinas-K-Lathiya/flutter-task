@@ -1,0 +1,28 @@
+  AppUpdateInfo? _updateInfo;
+  var errrorr;
+
+Future<void> checkForUpdate() async {
+    try {
+      AppUpdateInfo updateInfo = await InAppUpdate.checkForUpdate();
+      setState(() {
+        _updateInfo = updateInfo;
+      });
+
+      if (_updateInfo?.updateAvailability ==
+          UpdateAvailability.updateAvailable) {
+        InAppUpdate.performImmediateUpdate().catchError((e) {
+          errrorr = e;
+        });
+      }
+    } catch (e) {
+      errrorr = e;
+      print('Failed to check for up   dates: $e');
+    }
+  }
+
+
+call in initstate
+
+//* package *// inappupdate
+//* note *// only work while you download with playstore 
+
