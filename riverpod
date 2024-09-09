@@ -1,0 +1,119 @@
+///////////////                  make model class   /////////////////////////
+
+class User {
+  final int id;
+  final String name;
+  final String username;
+
+  User({required this.id, required this.name, required this.username});
+
+  // Factory constructor to create a User from JSON
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'],
+      name: json['name'],
+      username: json['username'],
+    );
+  }
+}
+
+
+///////////////////////////////////       increment decrement and api calling //////////////////////////
+
+final increment = StateProvider((ref) {
+  print(ref);
+  return 0;
+});
+
+final decrement = StateProvider((ref) => 0);
+
+// Define a FutureProvider to fetch user data
+final userProvider = FutureProvider<User>((ref) async {
+  final response =
+      await http.get(Uri.parse('https://jsonplaceholder.typicode.com/users/1'));
+
+  if (response.statusCode == 200) {
+    // Parse the response body into a User object
+    final data = json.decode(response.body);
+    return User.fromJson(data);
+  } else {
+    throw Exception('Failed to load user');
+  }
+});
+
+
+
+//////////////////////////////                                    // The main function to run the app ///////////////////////
+
+
+void main() {
+  runApp(ProviderScope(child: MyApp()));
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: UserScreen(),
+    );
+  }
+}
+
+
+///////////////////////////// how to handle code also handle loading and also handle error and function call only one time so state value can't update that function///////////////////////
+
+
+class UserScreen extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsyncValue = ref.watch(userProvider);
+    final counter = ref.watch(increment);
+    final qwasf = ref.watch(decrement);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Riverpod Async Example'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          ref.read(increment.notifier).state++;
+          ref.read(decrement.notifier).state--;
+        },
+      ),
+      body: Column(
+        children: [
+          Center(
+            child: Text(
+              'Counter Value: $counter',
+              style: TextStyle(fontSize: 24),
+            ),
+          ),
+          Center(
+            child: Text(
+              'Counter Value: $qwasf',
+              style: TextStyle(fontSize: 24),
+            ),
+          ),
+          Center(
+            child: userAsyncValue.when(
+              data: (user) => Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('ID: ${user.id}', style: TextStyle(fontSize: 20)),
+                  Text('Name: ${user.name}', style: TextStyle(fontSize: 20)),
+                  Text('Username: ${user.username}',
+                      style: TextStyle(fontSize: 20)),
+                ],
+              ),
+              loading: () =>
+                  CircularProgressIndicator(), // Show a loading indicator while fetching data
+              error: (error, _) => Text(
+                  'Error: $error'), // Show error message if something goes wrong
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
