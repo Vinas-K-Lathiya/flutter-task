@@ -117,3 +117,37 @@ class UserScreen extends ConsumerWidget {
   }
 }
 
+
+
+
+
+
+//////////////////////////////////////////// for extra knowladge passing parameter ////////////////////////////// 
+final userProvider = FutureProvider.family<User, int>((ref, userId) async {
+  final response = await http.get('https://jsonplaceholder.typicode.com/users/$userId');
+  return User.fromJson(jsonDecode(response.body));
+});
+
+// Usage in Widget
+class UserFamilyWidget extends ConsumerWidget {
+  final int userId;
+
+  UserFamilyWidget(this.userId);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsyncValue = ref.watch(userProvider(userId));
+
+    return userAsyncValue.when(
+      data: (user) => Text('User: ${user.name}'),
+      loading: () => CircularProgressIndicator(),
+      error: (err, stack) => Text('Error: $err'),
+    );
+  }
+}
+
+
+
+
+
+
