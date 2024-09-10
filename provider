@@ -1,0 +1,130 @@
+/////////////////////////////// increment decrement and api calling //////////////////
+
+
+
+class AppState with ChangeNotifier {
+  // Counter state
+  int counter = 0;
+
+  // List to store fetched users
+  List<dynamic> users = [];
+
+  // Method to increment counter
+  void incrementCounter() {
+    counter++;
+    notifyListeners();
+  }
+
+  // Method to decrement counter
+  void decrementCounter() {
+    counter--;
+    notifyListeners();
+  }
+
+  // Method to fetch data from an API
+  Future<void> fetchUsers() async {
+    final response =
+        await http.get(Uri.parse('https://jsonplaceholder.typicode.com/users'));
+
+    if (response.statusCode == 200) {
+      users = jsonDecode(response.body);
+      notifyListeners(); // Notify listeners to rebuild widgets
+    } else {
+      throw Exception('Failed to load users');
+    }
+  }
+}
+
+
+
+
+
+/////////////////// main dunction /////////////////////////// 
+
+
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AppState(),
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: CounterScreen(),
+    );
+  }
+}
+
+
+
+
+
+////////////////////////////////     counter class   //////////////////////
+
+class CounterScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context); // Get the AppState object
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Provider State Management'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Display the counter
+          Text(
+            'Counter: ${appState.counter}',
+            style: TextStyle(fontSize: 24),
+          ),
+          SizedBox(height: 20),
+          // Buttons to increment and decrement
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: appState.incrementCounter,
+                child: Text('Increment'),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: appState.decrementCounter,
+                child: Text('Decrement'),
+              ),
+            ],
+          ),
+          SizedBox(height: 30),
+          // Button to fetch users from API
+          ElevatedButton(
+            onPressed: () {
+              appState.fetchUsers();
+            },
+            child: Text('Fetch Users'),
+          ),
+          SizedBox(height: 20),
+          // Display the fetched user list
+          Expanded(
+            child: appState.users.isEmpty
+                ? Center(child: Text('No users fetched'))
+                : ListView.builder(
+                    itemCount: appState.users.length,
+                    itemBuilder: (context, index) {
+                      final user = appState.users[index];
+                      return ListTile(
+                        title: Text(user['name']),
+                        subtitle: Text(user['email']),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
